@@ -134,9 +134,8 @@
                 <div class="form-group">
                     <label>Emplacement</label>
                     <select id="emplacement" onchange="calculerTotal()">
-                        <option value="Extérieur" id="optExt">Extérieur (5€/m)</option>
-                        <option value="Intérieur" id="optInt">Intérie
-                            ur (6€/m)</option>
+                        <option value="Extérieur" id="optExt">Extérieur (4€/m)</option>
+                        <option value="Intérieur" id="optInt">Intérieur (5€/m)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -150,7 +149,7 @@
             </div>
             <div class="form-group">
                 <label>Total à régler :</label>
-                <div id="affichageTarif" class="price-tag">15 €</div>
+                <div id="affichageTarif" class="price-tag">12 €</div>
             </div>
         </fieldset>
 
@@ -213,8 +212,8 @@
     // --- LOGIQUE TARIFS ---
     function majOptionsTarifs() {
         const estMembre = document.getElementById('membre').value === "Oui";
-        document.getElementById('optExt').text = estMembre ? "Extérieur (4€/m)" : "Extérieur (5€/m)";
-        document.getElementById('optInt').text = estMembre ? "Intérieur (5€/m)" : "Intérieur (6€/m)";
+        document.getElementById('optExt').text = estMembre ? "Extérieur (3€/m)" : "Extérieur (4€/m)";
+        document.getElementById('optInt').text = estMembre ? "Intérieur (4€/m)" : "Intérieur (5€/m)";
         document.getElementById('numAdherentGroup').className = estMembre ? "form-group" : "form-group hidden";
     }
 
@@ -222,7 +221,7 @@
         const estMembre = document.getElementById('membre').value === "Oui";
         const type = document.getElementById('emplacement').value;
         const metres = parseInt(document.getElementById('metrage').value);
-        let prix = estMembre ? (type === "Extérieur" ? 4 : 5) : (type === "Extérieur" ? 5 : 6);
+        let prix = estMembre ? (type === "Extérieur" ? 3 : 4) : (type === "Extérieur" ? 4 : 5);
         document.getElementById('affichageTarif').innerText = (prix * metres) + " €";
     }
 
