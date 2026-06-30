@@ -1,2 +1,2 @@
-# Vide-grenier-Ginettes-2027
-Pré-inscription pour le vide grenier du 13 septembre 2026 à Quincieux (69650)
+# Vide-grenier-Ginettes-2026
+Pré-inscription pour le vide grenier du 20 septembre 2026 à Quincieux (69650)
