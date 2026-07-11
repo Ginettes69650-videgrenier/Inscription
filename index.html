@@ -47,11 +47,23 @@
     <h2>Pré-inscription Vide Grenier 2026 - Les Ginettes</h2>
 
     <div class="info-box">
-        <strong>📅 20 septembre 2026 (7h-17h)</strong>
+        <strong>INFORMATIONS IMPORTANTES</strong>
         <br/>
-        <br/>Installation dès 6h
-        <br/><strong>Véhicules interdits après 6h45</strong>
+        <br/><strong>Date</strong>
+        <br/>📅 20 septembre 2026 (7h-17h)
         <br/>
+        <br/><strong>Lieu</strong>
+        <br/>Espace Maurice Plaisantin (6 Chemin Saint-Laurent, 69650 Quincieux)
+        <br/>
+        <br/><strong>Horaires</strong>
+        <br/>Installation de 5h30 à 7h
+        <br/>Ventes de 7h à 17h
+        <br/>
+        <br/><strong>CONDITIONS</strong>
+        <br/><strong>Aucune table ou chaise ne sera fournie pour des raisons de responsabilités.</strong>
+        <br/><strong>Véhicules interdits à la circulation sur le site du vide grenier après 6h45.</strong> Un parking sera mis à disposition pour les exposants.
+        <br>
+        <br/><strong>Parcours d'inscription</strong>
         <br/>L'inscription se fait en 3 étapes:
         <br/>    1. Remplir le formulaire ci-dessous
         <br/>    2. Si la réservation est possible nous reviendrons vers vous pour compléter votre dossier avec 
@@ -134,16 +146,20 @@
                 <div class="form-group">
                     <label>Emplacement</label>
                     <select id="emplacement" onchange="calculerTotal()">
-                        <option value="Extérieur" id="optExt">Extérieur (4€/m)</option>
+                        <option value="Extérieur" id="optExt" selected>Extérieur (4€/m)</option>
                         <option value="Intérieur" id="optInt">Intérieur (5€/m)</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Métrage (1-10m)</label>
+                    <label>Métrage (1-20m)</label>
                     <select id="metrage" onchange="calculerTotal()">
                         <option value="1">1 m</option><option value="2">2 m</option><option value="3" selected>3 m</option>
                         <option value="4">4 m</option><option value="5">5 m</option><option value="6">6 m</option>
-                        <option value="7">7 m</option><option value="8">8 m</option><option value="9">9 m</option><option value="10">10 m</option>
+                        <option value="7">7 m</option><option value="8">8 m</option><option value="9">9 m</option>
+                        <option value="10">10 m</option><option value="11">11 m</option><option value="12">12 m</option>
+                        <option value="13">13 m</option><option value="14">14 m</option><option value="15">15 m</option>
+                        <option value="16">16 m</option><option value="17">17 m</option><option value="18">18 m</option>
+                        <option value="19">19 m</option><option value="20">20 m</option>
                     </select>
                 </div>
             </div>
@@ -153,16 +169,31 @@
             </div>
         </fieldset>
 
-        <fieldset>
-            <legend>Option Placement</legend>
-            <label>À côté d'un autre exposant ?</label>
-            <select id="proximite" onchange="toggleRef()">
-                <option value="Non">Non</option>
-                <option value="Oui">Oui</option>
-            </select>
-            <div id="refGroup" class="hidden" style="margin-top:10px;">
-                <label>Nom du voisin :</label>
-                <input type="text" id="refVoisin" placeholder="Ex: Mme MARTIN">
+       <fieldset>
+            <legend>Option Placement & Véhicule</legend>
+            <div style="margin-bottom: 15px;">
+                <label>À côté d'un autre exposant ?</label>
+                <select id="proximite" onchange="toggleRef()">
+                    <option value="Non">Non</option>
+                    <option value="Oui">Oui</option>
+                </select>
+                <div id="refGroup" class="hidden" style="margin-top:10px;">
+                    <label>Nom du voisin :</label>
+                    <input type="text" id="refVoisin" placeholder="Ex: Mme MARTIN">
+                </div>
+            </div>
+            
+            <!-- Bloc Véhicule conditionnel -->
+            <div id="vehiculeGroup" class="form-group">
+                <p style="font-size: 12px; color: #e67e22; font-style: italic; margin: 0 0 8px 0; line-height: 1.4;">
+                    ⚠️ La longueur du véhicule devra être inférieure à la longueur de l'emplacement. Dans le cas contraire, le véhicule sera refusé sur le stand.
+                </p>
+                <label>Véhicule sur l'emplacement ?</label>
+                <select id="vehicule">
+                    <option value="Sans">Sans</option>
+                    <option value="Avec facultatif">Avec si disponible</option>
+                    <option value="Avec obligatoire">Avec obligatoire (sinon refus inscription)</option>
+                </select>
             </div>
         </fieldset>
 
@@ -223,6 +254,16 @@
         const metres = parseInt(document.getElementById('metrage').value);
         let prix = estMembre ? (type === "Extérieur" ? 3 : 4) : (type === "Extérieur" ? 4 : 5);
         document.getElementById('affichageTarif').innerText = (prix * metres) + " €";
+
+        // --- AJOUT : Affichage conditionnel du véhicule ---
+        const vehiculeGroup = document.getElementById('vehiculeGroup');
+        if (type === "Extérieur") {
+            vehiculeGroup.classList.remove('hidden');
+        } else {
+            vehiculeGroup.classList.add('hidden');
+            // Optionnel : réinitialise la valeur à "Sans" si caché
+            document.getElementById('vehicule').value = "Sans";
+        }
     }
 
     function toggleRef() {
@@ -300,6 +341,7 @@
                     metrage_reserve: parseInt(document.getElementById('metrage').value),
                     total_prix: totalNum,
                     voisin_souhaite: document.getElementById('refVoisin').value || "Aucun",
+                    option_vehicule: document.getElementById('vehicule').value,
                     statut_dossier: 'En attente'
                 }]);
 
