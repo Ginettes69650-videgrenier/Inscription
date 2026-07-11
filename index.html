@@ -289,6 +289,49 @@
         return erreur;
     }
 
+    // --- TRANSFORMATION DATE EN FR ---
+    function formaterDateFR(dateString) {
+        if (!dateString) return "";
+        // Si la date contient des tirets (format AAAA-MM-JJ)
+        if (dateString.includes('-')) {
+            const [annee, mois, jour] = dateString.split('-');
+            return `${jour}     ${mois}     ${annee}`;
+        }
+        return dateString; // Renvoie la date telle quelle si elle est déjà formatée
+    }
+
+    function testerPlacementPDF() {
+        // 1. Jeu de données fictif complet pour remplir tous les champs du PDF
+        const donneesTest = {
+            nom: "DUPONT",
+            prenom: "Jean-Pierre",
+            date_naissance: "1985-05-25",
+            commune_naissance: "Lyon",
+            dept_naissance: "69",
+            adresse: "12 Avenue de la République",
+            cp: "69002",
+            ville: "LYON",
+            tel: "0601020304",
+            email: "jean.dupont@example.com",
+            pi_id: "26AA99999",
+            pi_date: "2020-10-12",
+            pi_lieu: "Préfecture du Rhône",
+            metrage: "20"
+        };
+
+        // 2. On s'assure qu'il y a des valeurs simulées dans l'affichage du tarif
+        // pour éviter les erreurs, si le formulaire est vide à l'écran.
+        const affichage = document.getElementById('affichageTarif');
+        if (!affichage.innerText || affichage.innerText === "0 €") {
+            affichage.innerText = "24 €"; // Valeur fictive pour le test
+        }
+
+        console.log("🚀 Lancement du test flash de positionnement PDF...");
+        
+        // 3. Appel direct de la fonction de génération
+        genererFormulairePDF(donneesTest);
+    }
+
     // --- SOUMISSION À SUPABASE ---
     document.getElementById('videGrenierForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -403,6 +446,9 @@ async function genererFormulairePDF(donnees) {
         // --- LA CORRECTION EST ICI ---
         const pages = pdfDoc.getPages();
         const firstPage = pages[0]; 
+
+        const estMembre = document.getElementById('membre').value === "Oui";
+        const typeEmplacement = document.getElementById('emplacement').value;
         // On extrait explicitement la première page du tableau
         // ------------------------------
 
@@ -413,33 +459,72 @@ async function genererFormulairePDF(donnees) {
 
         // 3. Remplissage des champs (Coordonnées approximatives à ajuster)
         // Identité [cite: 54-58]
-        firstPage.drawText(donnees.nom, { x: 80, y: 532, ...textOptions });
-        firstPage.drawText(donnees.prenom, { x: 270, y: 532, ...textOptions });
-        firstPage.drawText(donnees.date_naissance, { x: 95, y: 515, ...textOptions });
-        firstPage.drawText(donnees.commune_naissance, { x: 195, y: 515, ...textOptions });
-        firstPage.drawText(donnees.dept_naissance, { x: 360, y: 515, ...textOptions });
+        firstPage.drawText(donnees.nom, { x: 80, y: 565, ...textOptions });
+        firstPage.drawText(donnees.prenom, { x: 270, y: 565, ...textOptions });
+        const dateNaissanceFR = formaterDateFR(donnees.date_naissance);
+        firstPage.drawText(dateNaissanceFR, { x: 95, y: 548, ...textOptions });
+        firstPage.drawText(donnees.commune_naissance, { x: 195, y: 548, ...textOptions });
+        firstPage.drawText(donnees.dept_naissance, { x: 360, y: 548, ...textOptions });
 
         // Adresse et Contact [cite: 59-63]
-        firstPage.drawText(donnees.adresse, { x: 95, y: 500, ...textOptions });
-        firstPage.drawText(donnees.cp, { x: 110, y: 484, ...textOptions });
-        firstPage.drawText(donnees.ville, { x: 250, y: 484, ...textOptions });
-        firstPage.drawText(donnees.tel, { x: 105, y: 467, ...textOptions });
-        firstPage.drawText(donnees.email, { x: 250, y: 467, ...textOptions });
+        firstPage.drawText(donnees.adresse, { x: 95, y: 533, ...textOptions });
+        firstPage.drawText(donnees.cp, { x: 110, y: 517, ...textOptions });
+        firstPage.drawText(donnees.ville, { x: 250, y: 517, ...textOptions });
+        firstPage.drawText(donnees.tel, { x: 105, y: 500, ...textOptions });
+        firstPage.drawText(donnees.email, { x: 250, y: 500, ...textOptions });
 
         // Pièce d'identité [cite: 64-67]
-        firstPage.drawText(donnees.pi_id, { x: 205, y: 452, ...textOptions });
-        firstPage.drawText(donnees.pi_date, { x: 105, y: 436, ...textOptions });
-        firstPage.drawText(donnees.pi_lieu, { x: 210, y: 436, ...textOptions });
+        firstPage.drawText(donnees.pi_id, { x: 205, y: 485, ...textOptions });
+        const datePieceFR = formaterDateFR(donnees.pi_date);
+        firstPage.drawText(datePieceFR, { x: 105, y: 469, ...textOptions });
+        firstPage.drawText(donnees.pi_lieu, { x: 210, y: 469, ...textOptions });
 
         // Réservation [cite: 74-81, 84]
-        const textePrix = document.getElementById('affichageTarif').innerText;
-        firstPage.drawText(donnees.metrage, { x: 135, y: 246, ...textOptions });
-        firstPage.drawText(textePrix, { x: 245, y: 246, ...textOptions });
+        const textePrix = document.getElementById('affichageTarif').innerText.replace(' €', '');
+        
+        if (typeEmplacement === "Extérieur" && !estMembre) {
+            firstPage.drawText(donnees.metrage, { x: 100, y: 280, ...textOptions });
+            firstPage.drawText(textePrix.toString(), { x: 235, y: 280, ...textOptions });
 
-        // Date du jour [cite: 87]
-        const aujourdhui = new Date().toLocaleDateString('fr-FR');
-        firstPage.drawText(aujourdhui, { x: 270, y: 105, ...textOptions });
+        } else if (typeEmplacement === "Intérieur" && !estMembre) {
+            firstPage.drawText(donnees.metrage, { x: 100, y: 263, ...textOptions });
+            firstPage.drawText(textePrix.toString(), { x: 235, y: 263, ...textOptions });
 
+        } else if (typeEmplacement === "Extérieur" && estMembre) {
+            firstPage.drawText(donnees.metrage, { x: 375, y: 280, ...textOptions });
+            firstPage.drawText(textePrix.toString(), { x: 510, y: 280, ...textOptions });
+
+        } else if (typeEmplacement === "Intérieur" && estMembre) {
+            firstPage.drawText(donnees.metrage, { x: 375, y: 263, ...textOptions });
+            firstPage.drawText(textePrix.toString(), { x: 510, y: 263, ...textOptions });
+        }
+       
+        firstPage.drawText(textePrix.toString(), { x: 370, y: 168, ...textOptions });
+        
+        // 6. OPTIONS VÉHICULE (CASE À COCHER "X")
+                
+        // 1. Récupération de l'option choisie à l'écran
+        // Si le champ est masqué (Intérieur), la valeur par défaut sera "Sans"
+        const optionVehicule = document.getElementById('vehicule').value;
+
+        // 2. Variables d'alignement (Coordonnées X et Y à ajuster au millimètre)
+        // Note : Augmentez légèrement la taille du "X" (ex: size: 12 ou 14) pour qu'il remplisse bien la case
+        const optionsCaseX = { size: 12, color: rgb(0, 0, 0) }; 
+
+        // 3. Positionnement du X selon le choix
+        if (optionVehicule === "Avec obligatoire") {
+            // Position de la case "Sans véhicule" / "Non"
+            firstPage.drawText("X", { x: 44, y: 211, ...optionsCaseX });
+
+        } else if (optionVehicule === "Avec facultatif") {
+            // Position de la case "Véhicule sur l'emplacement (sous réserve de place)"
+            firstPage.drawText("X", { x: 227, y: 211, ...optionsCaseX });
+
+        } else if (optionVehicule === "Sans") {
+            // Position de la case "Véhicule obligatoire sur l'emplacement"
+            firstPage.drawText("X", { x: 408, y: 211, ...optionsCaseX });
+        }
+       
         // 4. Générer et proposer le téléchargement
         const pdfBytes = await pdfDoc.save();
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
@@ -454,6 +539,9 @@ async function genererFormulairePDF(donnees) {
     }
 }
 </script>
-
+<!-- Bouton temporaire pour ajuster les pixels du PDF -->
+<!-- <button type="button" onclick="testerPlacementPDF()" style="margin-top: 20px; background-color: #e74c3c; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 4px;">
+    🛠 Test Flash PDF (Sans vider le formulaire)
+</button>-->
 </body>
 </html>
