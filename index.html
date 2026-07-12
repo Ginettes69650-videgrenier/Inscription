@@ -10,7 +10,9 @@
     
     <!-- Bibliothèques : QRCode et Supabase SDK -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
+    <!-- Utilisez la version officielle complète (v2) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.0/dist/umd/supabase.js"></script>
     <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
     <style>
@@ -201,6 +203,16 @@
             </div>
         </fieldset>
 
+        <fieldset>
+            <legend>Commentaires</legend>
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="commentaire">Commentaire / Remarques particulières (optionnel)</label>
+                <textarea id="commentaire" maxlength="2000" rows="4" placeholder="Précisez ici vos besoins particuliers, dimensions spécifiques, etc. (2000 caractères max)" style="width: 100%; padding: 12px; border: 1px solid #dcdde1; border-radius: 8px; box-sizing: border-box; font-size: 14px; font-family: inherit; resize: vertical;"></textarea>
+                <span id="charCount" style="font-size: 11px; color: #7f8c8d; display: block; margin-top: 5px;">0 / 2000 caractères</span>
+            </div>
+        </fieldset>
+        
+
         <button type="submit" id="submitBtn">Envoyer ma pré-inscription</button>
     </form>
 
@@ -276,7 +288,7 @@
 
     // --- CONTRÔLE ANTI-POINT-VIRGULE ---
     function contientPointVirgule() {
-        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]');
+        const inputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
         let erreur = false;
         inputs.forEach(input => {
             if (input.value.includes(';')) {
@@ -389,7 +401,8 @@
                     total_prix: totalNum,
                     voisin_souhaite: document.getElementById('refVoisin').value || "Aucun",
                     option_vehicule: document.getElementById('vehicule').value,
-                    statut_dossier: 'En attente'
+                    statut_dossier: 'En attente',
+                    commentaire: document.getElementById('commentaire').value
                 }]);
 
             if (resError) throw resError;
@@ -413,8 +426,10 @@
             };
             await genererFormulairePDF(infoPdf);
             // SUCCESS POPUP
-            alert("✅ Succès ! Votre pré-inscription a été enregistrée avec succès.");
+            alert("✅ Succès ! Votre pré-inscription a été enregistrée avec succès. Nous reviendrons vers vous ultérieurement pour valider votre réservation.");
             document.getElementById('videGrenierForm').reset();
+            // --- AJOUT : Réinitialisation manuelle du compteur ---
+            document.getElementById('charCount').innerText = "0 / 2000 caractères";
             calculerTotal();
 
         } catch (error) {
@@ -428,6 +443,9 @@
     });
 
     window.onload = majOptionsTarifs;
+    document.getElementById('commentaire').addEventListener('input', function() {
+        document.getElementById('charCount').innerText = `${this.value.length} / 2000 caractères`;
+    });
     new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 100, height: 100 });
 
     // --- FONCTION DE GÉNÉRATION DU PDF COMPLÉTÉ ---
@@ -528,10 +546,31 @@ async function genererFormulairePDF(donnees) {
         // 4. Générer et proposer le téléchargement
         const pdfBytes = await pdfDoc.save();
         const blob = new Blob([pdfBytes], { type: "application/pdf" });
+        const horodatage = Date.now();
+        const nomFichier = `2026_${donnees.nom.toUpperCase()}_${horodatage}.pdf`;
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `Inscription_${donnees.nom}.pdf`;
-        link.click();
+
+
+        //link.href = URL.createObjectURL(blob);
+        //link.download = `Inscription_${donnees.nom}_${donnees.prenom}_${donnees.date_naissance}}.pdf`;
+        //link.click(); 
+
+        console.log("📤 Envoi du PDF vers le stockage sécurisé ...");
+
+        // 5. Envoi asynchrone vers le bucket Supabase
+        const { data, error } = await _supabase.storage
+            .from('inscriptions-securisees')
+            .upload(nomFichier, blob, {
+                contentType: 'application/pdf',
+                upsert: false // Empêche d'écraser un fichier existant
+            });
+
+        // 6. Gestion des erreurs d'envoi
+        if (error) {
+            console.error("Détails de l'erreur Supabase :", error);
+            throw new Error(`Erreur lors du stockage : ${error.message}`);
+        }
+        
 
     } catch (err) {
         console.error("Erreur PDF:", err);
