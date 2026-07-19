@@ -62,16 +62,20 @@
         <br/>Ventes de 7h à 17h
         <br/>
         <br/><strong>CONDITIONS</strong>
+        <br/><strong>Evénement réservé aux particuliers.</strong>
         <br/><strong>Aucune table ou chaise ne sera fournie pour des raisons de responsabilités.</strong>
         <br/><strong>Véhicules interdits à la circulation sur le site du vide grenier après 6h45.</strong> Un parking sera mis à disposition pour les exposants.
+        <br/><strong>Aucune table ou chaise ne sera fournie pour des raisons de responsabilités.</strong>
+        <br/><strong>Une caution de 30 € sera demandée à votre arrivée. Elle vous sera rendue après vérification de la propreté du stand au moment de votre départ.</strong>
         <br>
         <br/><strong>Parcours d'inscription</strong>
-        <br/>L'inscription se fait en 3 étapes:
+        <br/>Parcours d'inscription:
         <br/>    1. Remplir le formulaire ci-dessous
         <br/>    2. Si la réservation est possible nous reviendrons vers vous pour compléter votre dossier avec 
         <br/>        - Une copie de votre d'identité
         <br/>        - L'attestation complétée et signée
         <br/>        - Le paiement de la réservation
+        <br/>    3. Une fois tous les éléments validés nous vous envoyons un mail de confirmation
         <br/>
         <br/><strong>Contacts</strong>
         <br/>De préférence par mail à l'adresse ginettes69650.videgrenier@outlook.fr
@@ -169,6 +173,18 @@
                     </select>
                 </div>
             </div>
+            <!-- Bloc Véhicule conditionnel -->
+            <div id="vehiculeGroup" class="form-group">
+                <label>Véhicule sur l'emplacement ?</label>
+                <select id="vehicule">
+                    <option value="Sans">Sans</option>
+                    <option value="Avec facultatif">Avec si disponible</option>
+                    <option value="Avec obligatoire">Avec obligatoire (sinon refus inscription)</option>
+                </select>
+                <p style="font-size: 12px; color: #e67e22; font-style: italic; margin: 0 0 8px 0; line-height: 1.4;">
+                    ⚠️ La longueur du véhicule devra être inférieure à la longueur de l'emplacement. Dans le cas contraire, le véhicule sera refusé sur le stand.
+                </p>
+            </div>
             <div class="form-group">
                 <label>Total à régler :</label>
                 <div id="affichageTarif" class="price-tag">12 €</div>
@@ -176,9 +192,9 @@
         </fieldset>
 
        <fieldset>
-            <legend>Option Placement & Véhicule</legend>
+            <legend>Option Placement</legend>
             <div style="margin-bottom: 15px;">
-                <label>À côté d'un autre exposant ?</label>
+                <label>Voulez-vous être placé à côté d'un exposant que vous connaissez?</label>
                 <select id="proximite" onchange="toggleRef()">
                     <option value="Non">Non</option>
                     <option value="Oui">Oui</option>
@@ -188,21 +204,7 @@
                     <input type="text" id="refVoisin" placeholder="Ex: Mme MARTIN">
                 </div>
             </div>
-            
-            <!-- Bloc Véhicule conditionnel -->
-            <div id="vehiculeGroup" class="form-group">
-                <p style="font-size: 12px; color: #e67e22; font-style: italic; margin: 0 0 8px 0; line-height: 1.4;">
-                    ⚠️ La longueur du véhicule devra être inférieure à la longueur de l'emplacement. Dans le cas contraire, le véhicule sera refusé sur le stand.
-                </p>
-                <label>Véhicule sur l'emplacement ?</label>
-                <select id="vehicule">
-                    <option value="Sans">Sans</option>
-                    <option value="Avec facultatif">Avec si disponible</option>
-                    <option value="Avec obligatoire">Avec obligatoire (sinon refus inscription)</option>
-                </select>
-            </div>
         </fieldset>
-
         <fieldset>
             <legend>Commentaires</legend>
             <div class="form-group" style="margin-top: 15px;">
