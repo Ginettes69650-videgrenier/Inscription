@@ -63,7 +63,6 @@
         <br/>
         <br/><strong>CONDITIONS</strong>
         <br/><strong>Evénement réservé aux particuliers.</strong>
-        <br/><strong>Aucune table ou chaise ne sera fournie pour des raisons de responsabilités.</strong>
         <br/><strong>Véhicules interdits à la circulation sur le site du vide grenier après 6h45.</strong> Un parking sera mis à disposition pour les exposants.
         <br/><strong>Aucune table ou chaise ne sera fournie pour des raisons de responsabilités.</strong>
         <br/><strong>Une caution de 30 € sera demandée à votre arrivée. Elle vous sera rendue après vérification de la propreté du stand au moment de votre départ.</strong>
@@ -72,7 +71,7 @@
         <br/>Parcours d'inscription:
         <br/>    1. Remplir le formulaire ci-dessous
         <br/>    2. Si la réservation est possible nous reviendrons vers vous pour compléter votre dossier avec 
-        <br/>        - Une copie de votre d'identité
+        <br/>        - Une copie de votre pièce d'identité
         <br/>        - L'attestation complétée et signée
         <br/>        - Le paiement de la réservation
         <br/>    3. Une fois tous les éléments validés nous vous envoyons un mail de confirmation
@@ -95,7 +94,7 @@
                 <div class="form-group"><label>Département</label><input type="text" id="département_naissance" required placeholder="Rhône (69)"></div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label>Tiulaire de la pièce d'identité n°</label><input type="text" id="PI_ID" required placeholder="123456789ABC"></div>
+                <div class="form-group"><label>Titulaire de la pièce d'identité n°</label><input type="text" id="PI_ID" required placeholder="123456789ABC"></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>Délivrée le</label><input type="date" id="PI_Date_délivrance" required placeholder="01/01/1950"></div>
@@ -399,6 +398,7 @@
                 .insert([{
                     evenement_id: 1, // ID de votre événement créé précédemment
                     participant_id: participantId,
+                    type_emplacement: document.getElementById('emplacement').value,
                     metrage_reserve: parseInt(document.getElementById('metrage').value),
                     total_prix: totalNum,
                     voisin_souhaite: document.getElementById('refVoisin').value || "Aucun",
@@ -554,7 +554,7 @@ async function genererFormulairePDF(donnees) {
 
 
         //link.href = URL.createObjectURL(blob);
-        //link.download = `Inscription_${donnees.nom}_${donnees.prenom}_${donnees.date_naissance}}.pdf`;
+        //link.download = `Inscription_${donnees.nom}_${donnees.prenom}_${donnees.date_naissance}.pdf`;
         //link.click(); 
 
         console.log("📤 Envoi du PDF vers le stockage sécurisé ...");
